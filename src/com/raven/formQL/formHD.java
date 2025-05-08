@@ -410,7 +410,7 @@ public class formHD extends javax.swing.JPanel {
 
         cbBan.setBackground(new java.awt.Color(83, 105, 118));
         cbBan.setForeground(new java.awt.Color(204, 204, 204));
-        cbBan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ban 1", "Ban 2", "Ban 3", "Ban 4", " " }));
+        cbBan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ban1", "Ban2", "Ban3", "Ban4", " " }));
 
         cbTang.setBackground(new java.awt.Color(83, 105, 118));
         cbTang.setForeground(new java.awt.Color(204, 204, 204));
@@ -854,7 +854,7 @@ public class formHD extends javax.swing.JPanel {
                 // Lấy phần số giữa "Ban" và "T"
                 String[] parts = banData.split("T");
                 String banNumber = parts[0].replace("Ban", "").trim();
-                cbBan.setSelectedItem("Ban " + banNumber);
+                cbBan.setSelectedItem("Ban" + banNumber);
             } else {
                 // Nếu dữ liệu không hợp lệ, đặt giá trị mặc định
                 cbBan.setSelectedItem("N/A");
@@ -1054,7 +1054,7 @@ public class formHD extends javax.swing.JPanel {
                 // Lấy phần số giữa "Ban" và "T"
                 String[] parts = banData.split("T");
                 String banNumber = parts[0].replace("Ban", "").trim();
-                cbBan.setSelectedItem("Ban " + banNumber);
+                cbBan.setSelectedItem("Ban" + banNumber);
             } else {
                 // Nếu dữ liệu không hợp lệ, đặt giá trị mặc định
                 cbBan.setSelectedItem("N/A");

@@ -45,11 +45,13 @@ public class MainKhachHang extends javax.swing.JFrame {
                 } else if (index ==5) {
                     showForm(new formDTL(user));
                 } else if (index ==6) {
+                    showForm(new Form(user));
+                } else if (index ==7) {
                     MainLogin login = new MainLogin();
                     login.setVisible(true);
                     MainKhachHang.this.dispose();
                 } else {
-                    showForm(new Form(index));
+                    showForm(new Form1(user));
                 }
             }
         };

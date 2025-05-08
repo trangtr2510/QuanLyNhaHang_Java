@@ -94,10 +94,16 @@ public class ServiceVoucher {
     }
 
     public void deleteVoucher(ModelVoucher mdb) throws SQLException {
+        String sql1 = "Delete DSVoucherKH where MaVoucher = ?";
+        PreparedStatement p1 = con.prepareStatement(sql1);
+        p1.setString(1, mdb.getMaVoucher());
+        
         String sql = "Delete Voucher where MaVoucher = ?";
         PreparedStatement p = con.prepareStatement(sql);
         p.setString(1, mdb.getMaVoucher());
 
+        p1.executeUpdate();
+        p1.close();
         p.executeUpdate();
         p.close();
     }
@@ -106,7 +112,7 @@ public class ServiceVoucher {
         boolean duplicate = false;
         String sql = "SELECT TOP 1 *\n"
                 + "FROM Voucher\n"
-                + "WHERE TenVoucher = ? ";
+                + "WHERE MaVoucher = ? ";
         PreparedStatement p = con.prepareStatement(sql);
         p.setString(1, email);
         ResultSet r = p.executeQuery();

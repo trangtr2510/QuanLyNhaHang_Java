@@ -47,13 +47,13 @@ public class PanelCover extends javax.swing.JPanel {
         
         logo= new ImageLogo();
         logo.setPreferredSize(new Dimension(250,250));
-        logo.setIcon(new ImageIcon(getClass().getResource("/Icons/logoChipi.jpg")));
+        logo.setIcon(new ImageIcon(getClass().getResource("/Icons/MuRomLogo.png")));
         add(logo);
         title= new JLabel("Chào mừng đến");
         title.setFont(new Font("sansserif",1,18));
         title.setForeground(new Color(245,245,245));
         add(title);
-        subtitle = new JLabel("Chipi Buffet");
+        subtitle = new JLabel("Buffet Mũ Rơm");
         subtitle.setFont(new Font("sansserif",1,28));
         subtitle.setForeground(new Color(245,245,245));
         add(subtitle);
@@ -148,14 +148,14 @@ public class PanelCover extends javax.swing.JPanel {
         if(this.isLogin!=login){
             //Set Data cho Panel cover khi ở màn hình đăng nhập
             if(login){
-                logo.setIcon(new ImageIcon(getClass().getResource("/Icons/logoChipi.jpg")));
+                logo.setIcon(new ImageIcon(getClass().getResource("/Icons/MuRomLogo.png")));
                 title.setText("Bạn chưa có tài khoản tại");
                 description.setText("Đừng lo, tạo mới một tài khoản");
-                descriptionl.setText("và bắt đầu trải nghiệm của bạn với Chipi Buffet");
+                descriptionl.setText("và bắt đầu trải nghiệm của bạn với Buffet Mũ Rơm");
                 button.setText("Đăng ký  >>");
             }else{
                 //Set Data cho Panel cover khi ở màn hình đăng ký
-                logo.setIcon(new ImageIcon(getClass().getResource("/Icons/logoChipi.jpg")));
+                logo.setIcon(new ImageIcon(getClass().getResource("/Icons/MuRomLogo.png")));
                 title.setText("Chào mừng bạn đến với nhà hàng");
                 description.setText("Để sử dụng dịch vụ tại đây vui lòng");
                 descriptionl.setText("đăng nhập với tài khoản cá nhân của bạn");

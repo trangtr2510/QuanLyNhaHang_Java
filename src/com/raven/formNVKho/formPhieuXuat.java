@@ -511,7 +511,7 @@ public class formPhieuXuat extends javax.swing.JPanel {
 
             // Cấu hình JDialog
             JDialog dialog = new JDialog();
-            dialog.setTitle("Nhập Nguyên Liệu");
+            dialog.setTitle("Xuất Nguyên Liệu");
             dialog.setSize(1025, 700);  // Đặt kích thước cho cửa sổ
             dialog.setLocationRelativeTo(null);  // Đặt cửa sổ ở giữa màn hình
             dialog.setModal(true);  // Cửa sổ này sẽ bắt buộc phải đóng để trở lại giao diện chính

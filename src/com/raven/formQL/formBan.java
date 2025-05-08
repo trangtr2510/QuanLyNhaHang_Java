@@ -350,7 +350,7 @@ public class formBan extends javax.swing.JPanel {
                                 .addComponent(txtTime, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(button3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -371,7 +371,7 @@ public class formBan extends javax.swing.JPanel {
                                             .addComponent(txtTK, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(button9, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                                 .addGap(18, 18, 18))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel9)
@@ -441,7 +441,7 @@ public class formBan extends javax.swing.JPanel {
         background1.setLayout(background1Layout);
         background1Layout.setHorizontalGroup(
             background1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1017, Short.MAX_VALUE)
+            .addGap(0, 954, Short.MAX_VALUE)
             .addGroup(background1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(background1Layout.createSequentialGroup()
                     .addContainerGap()
@@ -486,24 +486,33 @@ public class formBan extends javax.swing.JPanel {
 
     private void button8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button8ActionPerformed
         //Huy Dat ban 
-        try {
-            mdb.setIDBan(txtIDB.getText());
-            mdb.setTang(txtTang.getText());
+        int selectedRow = dgwKH.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn bàn muốn hủy!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        } else {
             try {
-                if (service.checkDuplicateBan(mdb.getIDBan(), mdb.getTang())) {
-                    service.HUYBan(mdb);
-                    resetForm();
-                    showMessage(Message.MessageType.SUCCESS, "Bàn đã được hủy thành công.");
-                } else {
-                    showMessage(Message.MessageType.ERROR, "Bàn chưa được đặt.");
+                mdb.setIDBan(txtIDB.getText());
+                mdb.setTang(txtTang.getText());
+                mdbHD.setIDKH(0);
+                mdbHD.setIdBan(txtIDB.getText());
+                try {
+                    if (service.checkDuplicateBan(mdb.getIDBan(), mdb.getTang())) {
+                        service.HUYBan2(mdb);
+                        serviceHD.UpdateHDHuy2(mdbHD);
+                        resetForm();
+                        showMessage(Message.MessageType.SUCCESS, "Bàn đã được hủy thành công.");
+                    } else {
+                        showMessage(Message.MessageType.ERROR, "Bàn chưa được đặt.");
+                    }
+                } catch (Exception e) {
+                    showMessage(Message.MessageType.ERROR, "Lỗi khi hủy bàn.");
+                    e.printStackTrace();
                 }
             } catch (Exception e) {
-                showMessage(Message.MessageType.ERROR, "Lỗi khi hủy bàn.");
+                showMessage(Message.MessageType.ERROR, "Đã xảy ra lỗi không xác định.");
                 e.printStackTrace();
             }
-        } catch (Exception e) {
-            showMessage(Message.MessageType.ERROR, "Đã xảy ra lỗi không xác định.");
-            e.printStackTrace();
         }
     }//GEN-LAST:event_button8ActionPerformed
 
@@ -551,6 +560,7 @@ public class formBan extends javax.swing.JPanel {
                     if (idkhStr != null) {
                         int idkh = Integer.parseInt(idkhStr);
                         mdbHD.setIDKH(idkh); // Set ID_KH as an integer
+                        mdb.setIDKH(idkh);
                     } else {
                         JOptionPane.showMessageDialog(null, "Không tìm thấy ID khách hàng.");
                     }
@@ -560,7 +570,7 @@ public class formBan extends javax.swing.JPanel {
                     } else {
                         service.UpdateBan(mdb);
                         serviceHD.insertHD(mdbHD);
-                        //service.insertBan(mdb);
+                        service.insertBan(mdb);
                         resetForm();
                         showMessage(Message.MessageType.SUCCESS, "Đặt bàn thành công.");
                     }

@@ -81,8 +81,9 @@ public class MenuKH extends javax.swing.JPanel {
         addMenu(new ImageIcon(getClass().getResource("/Icons/clock.png")), "Lịch sử hóa đơn", 3);
         addMenu(new ImageIcon(getClass().getResource("/Icons/user (2).png")), "Thông tin cá nhân", 4);
         addMenu(new ImageIcon(getClass().getResource("/Icons/analytics.png")), "Điểm tích lũy", 5);
+        addMenu(new ImageIcon(getClass().getResource("/Icons/11.png")), "Liên hệ", 6);
         addEmpty();
-        addMenu(new ImageIcon(getClass().getResource("/Icons/10.png")), "Logout", 6);
+        addMenu(new ImageIcon(getClass().getResource("/Icons/10.png")), "Logout", 7);
     }
 
     private void addEmpty() {

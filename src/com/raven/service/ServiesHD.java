@@ -31,6 +31,43 @@ public class ServiesHD {
         pInsert.execute();
         pInsert.close();
     }
+    
+    public void UpdateHDHuy(ModelHD mdb) throws SQLException {
+        String sql = "SET DATEFORMAT dmy;"
+                + "UPDATE qlhoadon SET trangthai ='Da huy ban' WHERE idkh = ? And Trangthai = 'Chua thanh toan'";
+        PreparedStatement pInsert = con.prepareStatement(sql);
+
+        pInsert.setInt(1, mdb.getIDKH());
+
+        pInsert.executeUpdate();//thuc thi cau truy van update, insert, delete,...
+        pInsert.close();
+    }
+    
+    public void UpdateHDHuy2(ModelHD mdb) throws SQLException {
+        String sql = "SET DATEFORMAT dmy;"
+                + "UPDATE qlhoadon SET trangthai ='Da huy ban' WHERE idkh = ? And idBan = ? And Trangthai = 'Chua thanh toan'";
+        PreparedStatement pInsert = con.prepareStatement(sql);
+
+        pInsert.setInt(1, mdb.getIDKH());
+        pInsert.setString(2, mdb.getIdBan());
+
+        pInsert.executeUpdate();//thuc thi cau truy van update, insert, delete,...
+        pInsert.close();
+    }
+    
+    public void UpdateHDSuaDatBan(ModelHD mdb) throws SQLException {
+        String sql = "SET DATEFORMAT dmy;"
+                + "UPDATE qlhoadon SET ngaytt=?, gia = ? WHERE idkh=? AND idban = ?";
+        PreparedStatement pInsert = con.prepareStatement(sql);
+
+        pInsert.setString(1, mdb.getNgayTT());
+        pInsert.setFloat(2, mdb.getGia());
+        pInsert.setInt(3, mdb.getIDKH());
+        pInsert.setString(4, mdb.getIdBan());
+
+        pInsert.executeUpdate();//thuc thi cau truy van update, insert, delete,...
+        pInsert.close();
+    }
 
     public void UpdateHD(ModelHD mdb) throws SQLException {
         String sql = "SET DATEFORMAT dmy;"

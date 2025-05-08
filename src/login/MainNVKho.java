@@ -60,7 +60,7 @@ public class MainNVKho extends javax.swing.JFrame {
                     login.setVisible(true);
                     MainNVKho.this.dispose();
                 } else {
-                    showForm(new Form(index));
+                    showForm(new FormTK());
                 }
             }
         };

@@ -19,7 +19,7 @@ public class formDSDB extends javax.swing.JPanel {
 
 
     final String header[] = {"Bàn", "Tầng", "Tên KH", "Số điện thoại", "Số lượng người", "Ngày đặt",
-        "Giờ đặt", "IDKH"};
+        "Giờ đặt", "IDKH", "Trạng thái"};
     DatabaseConnection cn = new DatabaseConnection();
     Connection connection;
     DefaultTableModel tb = new DefaultTableModel(header, 0);

@@ -35,12 +35,13 @@ public class Form3 extends TransitionsForm {
 
         header.setFont(new java.awt.Font("Papyrus", 1, 20)); // NOI18N
         header.setForeground(new java.awt.Color(108, 91, 123));
+        header.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         header.setText("ABOUT US");
 
         wel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         wel.setForeground(new java.awt.Color(63, 63, 63));
         wel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        wel.setText("<html>  Welcome to  <i style=\"color:rgb(108,91,123);font-size:14px;\">  CHIPI BUFFE<i> </html>");
+        wel.setText("<html>  Welcome to  <i style=\"color:rgb(108,91,123);font-size:14px;\">  Buffet Mũ Rơm<i> </html>");
 
         jScrollPane2.setBorder(null);
         jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -78,7 +79,7 @@ public class Form3 extends TransitionsForm {
         listMember.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         listMember.setForeground(new java.awt.Color(89, 89, 89));
         listMember.setRows(5);
-        listMember.setText("Team Members :\nPhạm  Thị Hoàng Anh \nVũ Thị Quỳnh\nTrần Thị Huyền Trang \nNguyễn Văn Được\nPhạm Thị Hồng Yến");
+        listMember.setText("Team Members :\nTrần Thị Huyền Trang ");
         listMember.setBorder(null);
         listMember.setFocusable(false);
         jScrollPane3.setViewportView(listMember);
@@ -98,19 +99,17 @@ public class Form3 extends TransitionsForm {
             .addGroup(background1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(background1Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addGroup(background1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(background1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addGroup(background1Layout.createSequentialGroup()
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(background1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(header1)
                                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 470, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(background1Layout.createSequentialGroup()
-                            .addGap(230, 230, 230)
-                            .addComponent(header))
                         .addComponent(wel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane2)
                         .addComponent(footer)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(header, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(img, javax.swing.GroupLayout.PREFERRED_SIZE, 424, Short.MAX_VALUE)
                     .addContainerGap()))

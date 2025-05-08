@@ -3,18 +3,21 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH/src/login/MainNVKho.java</file>
-            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH/src/com/raven/formNVKho/formNL.java</file>
-            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH/src/com/raven/model/ModelPhieuNhap.java</file>
-            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH/src/com/raven/formNVKho/formPhieuNhap.java</file>
-            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH/src/login/MainQuanLy.java</file>
-            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH/src/com/raven/service/ChiTietPhieuNhapDAO.java</file>
-            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH/src/com/raven/Connection/DatabaseConnection.java</file>
-            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH/src/com/raven/formNVKho/CTPhieuNhap.java</file>
-            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH/src/com/raven/formNVKho/formNhapNL.java</file>
-            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH/src/com/raven/service/ServiceNguyenLieu.java</file>
-            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH/src/com/raven/model/ModelNguyenLieu.java</file>
-            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH/src/com/raven/service/PhieuNhapDAO.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/com/raven/component/MenuKH.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/com/raven/service/ServiceBuffet.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/login/MainLogin.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/com/raven/model/ModelBuffet.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/login/MainNV.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/com/raven/form/Form5.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/com/raven/form/Form.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/com/raven/service/ServiceBan.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/com/raven/componert/PanelCover.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/com/raven/formQL/formBuffet.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/com/raven/service/ServiesHD.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/com/raven/form/Form3.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/com/raven/model/ModelDatBan.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/login/MainKhachHang.java</file>
+            <file>file:/C:/Users/TV/Documents/Zalo%20Received%20Files/QLNH%20-%20Copy/src/com/raven/form/Form1.java</file>
         </group>
     </open-files>
 </project-private>

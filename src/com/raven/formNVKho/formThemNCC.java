@@ -49,6 +49,7 @@ public class formThemNCC extends javax.swing.JPanel {
         intt();
         jScrollPane1.setVerticalScrollBar(new ScrollBar());
         loadBang();
+        txtID.setEnabled(false);
     }
 
     private void intt() {
@@ -464,10 +465,13 @@ public class formThemNCC extends javax.swing.JPanel {
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn nhà cung cấp muốn xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
                 return;
-            }else {
-                //tạo form thông báo xác nhận xóa nhân viên
+            }else if (service.checkDuplicateNCCByName(txtName.getText())){
+                JOptionPane.showMessageDialog(this, "Đã nhập nguyên liệu từ nhà cung cấp này. Không thể xóa.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            else{
                 int ck = JOptionPane.showConfirmDialog(this, "Bạn chắc chắn muốn xóa nhà cung cấp này?", "Thông báo", JOptionPane.YES_NO_OPTION);
-                if (ck == JOptionPane.YES_OPTION) {//nếu chọn có thì thực hiện xóa nhân viên
+                if (ck == JOptionPane.YES_OPTION) {
                     service.deleteNCC(Integer.parseInt(txtID.getText()));
                     resetForm();//làm mới lại form
                     showMessage(Message.MessageType.SUCCESS, "Xóa nhà cung cấp thành công.");//thong báo thành công 

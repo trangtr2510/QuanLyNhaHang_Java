@@ -10,23 +10,28 @@ import com.raven.model.ModelHD;
 import com.raven.model.ModelUser;
 import com.raven.model.ModelVoucher;
 import com.raven.service.ServiceBan;
+import com.raven.service.ServiceBuffet;
 import com.raven.service.ServiceVoucher;
 import com.raven.service.ServiesHD;
 import com.raven.swing.ScrollBar;
 import com.raven.transitions.TransitionsForm;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -45,6 +50,7 @@ public class Form1 extends TransitionsForm {
     private MigLayout layout;
     private ModelDatBan mdb;
     private ServiceBan service;
+    private ServiceBuffet serviceBuffet;
     private JFrame jFame;
     private ModelUser user;
     private DatabaseConnection cn = new DatabaseConnection();
@@ -58,6 +64,7 @@ public class Form1 extends TransitionsForm {
         txtDate1.setEditable(false);
         txtTime.setEditable(false);
         intt();
+        serviceBuffet = new ServiceBuffet();
         service = new ServiceBan();
         mdb = new ModelDatBan();
         serviceHD = new ServiesHD();
@@ -65,12 +72,15 @@ public class Form1 extends TransitionsForm {
         mdbVC = new ModelVoucher();
         serviceVC = new ServiceVoucher();
         jScrollPane2.setVerticalScrollBar(new ScrollBar());
+        btnEdit.setVisible(false);
 
+        displayUserInfo(user);
+        NameKH.setEnabled(false);
         getDataCombobox();
         idTang.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                updateLabels(); // Gọi phương thức để cập nhật nhãn
+                updateLabels(user.getUserID()); // Gọi phương thức để cập nhật nhãn
             }
         });
 
@@ -79,7 +89,7 @@ public class Form1 extends TransitionsForm {
             label.addAncestorListener(new javax.swing.event.AncestorListener() {
                 @Override
                 public void ancestorAdded(javax.swing.event.AncestorEvent event) {
-                    updateLabels();
+                    updateLabels(user.getUserID());
                 }
 
                 @Override
@@ -113,6 +123,42 @@ public class Form1 extends TransitionsForm {
         } else {
             updateMoTaLabel(""); // or any default value
         }
+        
+        loadBuffetToComboBox();
+        cbBuffet.addActionListener(e -> hienThiGiaBuffet());
+        
+    }
+
+    // Phương thức hiển thị thông tin khách hàng
+    public void displayUserInfo(ModelUser user) {
+        // Thay thế user.getUserID() bằng ID_ND để lấy thông tin từ bảng khachhang và nguoidung
+        int userID = user.getUserID();  // ID_ND của khách hàng
+
+        try {
+            Connection conn = cn.getConnection();
+            // Truy vấn để lấy thông tin khách hàng
+            String sql = "SELECT kh.tenKH, nd.Vaitro "
+                    + "FROM qlkhachhang kh "
+                    + "JOIN nguoidung nd ON kh.ID_ND = nd.ID_ND "
+                    + "WHERE nd.ID_ND = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userID);
+
+            ResultSet rs = stmt.executeQuery();
+            // Đặt dữ liệu vào các trường giao diện nếu tìm thấy khách hàng
+            if (rs.next()) {
+                NameKH.setText(rs.getString("tenKH"));
+            }
+
+            // Đóng kết nối
+            rs.close();
+            stmt.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Không thể tải thông tin khách hàng.");
+        }
     }
 
     public void updateMoTaLabel(String i) {
@@ -127,6 +173,37 @@ public class Form1 extends TransitionsForm {
             lblMota.setText(moTa != null ? "Chú thích: " + moTa : "Mô tả không tồn tại.");
         } else {
             lblMota.setText("Chú thích: Bạn chưa có ưu đãi, hãy tích điểm để đổi lấy ưu đãi.");
+        }
+    }
+    
+    public void loadBuffetToComboBox() {
+        try {
+            // Gọi service để lấy danh sách tên buffet
+            List<String> tenBuffets = serviceBuffet.getAllTenBuffet();
+
+            // Lấy model của ComboBox để thao tác
+            DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) cbBuffet.getModel();
+            model.removeAllElements(); // Xóa tất cả item cũ
+
+            // Thêm từng tên buffet vào ComboBox nếu chưa tồn tại
+            for (String tenBuffet : tenBuffets) {
+                if (model.getIndexOf(tenBuffet) == -1) {
+                    model.addElement(tenBuffet);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void hienThiGiaBuffet() {
+        try {
+            String tenBuffet = (String) cbBuffet.getSelectedItem();  // Lấy tên buffet từ ComboBox
+            double gia = serviceBuffet.getGiaBuffetByTen(tenBuffet);   // Gọi service để lấy giá
+            txtGia.setText(String.valueOf(gia));                 // Hiển thị lên JTextField
+        } catch (Exception e) {
+            e.printStackTrace();
+            txtGia.setText("Lỗi"); // Optional: Hiển thị thông báo lỗi nếu cần
         }
     }
 
@@ -173,7 +250,7 @@ public class Form1 extends TransitionsForm {
     }
 
     private void checkAndAddVoucherIfNotExists(String sdt) {
-        String checkSDTQuery = "SELECT COUNT(*) FROM dsban WHERE idkh = ?";
+        String checkSDTQuery = "SELECT COUNT(*) FROM qlhoadon WHERE idkh = ? And Trangthai= 'Da thanh toan'";
         try (Connection connection = cn.getConnection(); PreparedStatement psCheck = connection.prepareStatement(checkSDTQuery)) {
             psCheck.setString(1, sdt);
             try (ResultSet rsCheck = psCheck.executeQuery()) {
@@ -219,11 +296,95 @@ public class Form1 extends TransitionsForm {
 //
 //        return idkh;
 //    }
-    private void updateLabels() {
+    private void updateLabels(int idnd) {
         String selectedItem = idTang.getSelectedItem().toString();
         int index = selectedItem.lastIndexOf(" ") + 1;
         String numberPart = selectedItem.substring(index);
         JLabel[] labels = {jLabel15, jLabel17, jLabel19, jLabel21};
+        JButton[] buttons = {button5, button6, button7, button8};
+        try {
+            String idkhCurrent = null;
+            // Lấy IDKH của người đang đăng nhập
+            String khQuery = "SELECT kh.idkh FROM qlkhachhang kh JOIN nguoidung nd ON kh.ID_ND = nd.ID_ND WHERE nd.ID_ND = ?";
+            try (Connection conn = cn.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(khQuery)) {
+                stmt.setInt(1, idnd);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    idkhCurrent = rs.getString("idkh");
+                }
+            }
+
+            for (int i = 0; i < buttons.length; i++) {
+                String idBan = "Ban" + (i + 1) + "T" + numberPart;
+                mdb.setIDBan(idBan);
+                mdb.setTang(selectedItem);
+
+                // Cập nhật tên bàn
+                labels[i].setText(idBan);
+
+                if (service.checkDuplicateBanTrong(idBan, selectedItem)) {
+                    // Bàn trống
+                    buttons[i].setText("Đặt bàn");
+                    buttons[i].setBackground(new Color(204,153,255));
+                    buttons[i].setEnabled(true);
+                    labels[i].setText(idBan + " (Còn Trống)");
+                } else {
+                    // Kiểm tra ai đặt bàn này
+                    String datbanQuery = "SELECT idkh FROM datban WHERE idban = ? AND tang = ?";
+                    try (Connection conn = cn.getConnection();
+                         PreparedStatement stmt = conn.prepareStatement(datbanQuery)) {
+                        stmt.setString(1, idBan);
+                        stmt.setString(2, selectedItem);
+                        ResultSet rs = stmt.executeQuery();
+
+                        if (rs.next()) {
+                            String idkhBan = rs.getString("idkh");
+                            if (idkhBan.equals(idkhCurrent)) {
+                                buttons[i].setText("Sửa thông tin");
+                                buttons[i].setBackground(new Color(255, 204, 102));
+                                buttons[i].setEnabled(true);
+                                // Lấy thông tin đặt bàn từ DB và set vào mdb
+                                String infoQuery = "SELECT tenkh, sdt, slnguoi, ngaydat, giodat FROM datban WHERE idban = ? AND tang = ? AND idkh = ?";
+                                try (PreparedStatement infoStmt = conn.prepareStatement(infoQuery)) {
+                                    infoStmt.setString(1, idBan);
+                                    infoStmt.setString(2, selectedItem);
+                                    infoStmt.setString(3, idkhCurrent);
+                                    ResultSet infoRS = infoStmt.executeQuery();
+
+                                    if (infoRS.next()) {
+                                        mdb.setNameKH(infoRS.getString("tenkh"));
+                                        mdb.setSDT(infoRS.getString("sdt"));
+                                        mdb.setSLNguoi(infoRS.getInt("slnguoi"));
+                                        mdb.setDate(infoRS.getString("ngaydat"));
+                                        mdb.setTime(infoRS.getString("giodat"));
+                                    }
+                                }
+
+                                buttons[i].addActionListener(new ActionListener() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent e) {
+                                        JButton clickedButton = (JButton) e.getSource();
+                                        if (clickedButton.getText().equals("Sửa thông tin")) {
+                                            doDuLieuDatBanSuaThongTin();
+                                            btnEdit.setVisible(true);
+                                        }
+                                    }
+                                });
+                            } else {
+                                buttons[i].setText("Đã Đặt");
+                                buttons[i].setBackground(new Color(126, 171, 208));
+                                buttons[i].setEnabled(false);
+                                buttons[i].setMaximumSize(new Dimension(77, 35));
+                            }
+                        }
+                    }
+                    labels[i].setText(idBan + " (Đã Đặt)");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
             for (int i = 0; i < labels.length; i++) {
                 mdb.setIDBan("Ban" + (i + 1) + "T" + numberPart);
@@ -237,8 +398,22 @@ public class Form1 extends TransitionsForm {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
+    
+    public void doDuLieuDatBanSuaThongTin() {
+        if (mdb != null) {
+            BanID.setText(mdb.getIDBan());
+            NameKH.setText(mdb.getNameKH());
+            SDT.setText(mdb.getSDT());
+            SoLuong.setText(String.valueOf(mdb.getSLNguoi()));
+            txtDate1.setText(mdb.getDate());
+            txtTime.setText(mdb.getTime());
+            idTang.setSelectedItem(mdb.getTang());
+        } else {
+            JOptionPane.showMessageDialog(this, "Không có dữ liệu đặt bàn để sửa.");
+        }
+    }
+
 
     public void getDataCombobox() {
         DefaultComboBoxModel<DanhSachTang> model = (DefaultComboBoxModel) idTang.getModel();
@@ -297,6 +472,10 @@ public class Form1 extends TransitionsForm {
         cbMa = new javax.swing.JComboBox<>();
         bg = new javax.swing.JLayeredPane();
         lblMota = new javax.swing.JLabel();
+        cbBuffet = new javax.swing.JComboBox<>();
+        jLabel2 = new javax.swing.JLabel();
+        txtGia = new qlnh.swing.MyTextField();
+        btnEdit = new qlnh.swing.Button();
 
         dateChooser1.setTextRefernce(txtDate1);
 
@@ -319,7 +498,8 @@ public class Form1 extends TransitionsForm {
         button5.setBackground(new java.awt.Color(204, 152, 255));
         button5.setForeground(new java.awt.Color(51, 51, 51));
         button5.setText("Đặt bàn");
-        button5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        button5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        button5.setMaximumSize(new java.awt.Dimension(150, 35));
         button5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button5ActionPerformed(evt);
@@ -337,7 +517,8 @@ public class Form1 extends TransitionsForm {
         button6.setBackground(new java.awt.Color(204, 153, 255));
         button6.setForeground(new java.awt.Color(51, 51, 51));
         button6.setText("Đặt bàn");
-        button6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        button6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        button6.setMaximumSize(new java.awt.Dimension(150, 35));
         button6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button6ActionPerformed(evt);
@@ -355,7 +536,8 @@ public class Form1 extends TransitionsForm {
         button7.setBackground(new java.awt.Color(204, 153, 255));
         button7.setForeground(new java.awt.Color(51, 51, 51));
         button7.setText("Đặt bàn");
-        button7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        button7.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        button7.setMaximumSize(new java.awt.Dimension(150, 35));
         button7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button7ActionPerformed(evt);
@@ -373,7 +555,8 @@ public class Form1 extends TransitionsForm {
         button8.setBackground(new java.awt.Color(204, 153, 255));
         button8.setForeground(new java.awt.Color(51, 51, 51));
         button8.setText("Đặt bàn");
-        button8.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        button8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        button8.setMaximumSize(new java.awt.Dimension(150, 35));
         button8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button8ActionPerformed(evt);
@@ -456,7 +639,7 @@ public class Form1 extends TransitionsForm {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(31, 31, 31)
                         .addComponent(button8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addContainerGap(89, Short.MAX_VALUE))
         );
 
         jScrollPane2.setViewportView(jPanel4);
@@ -552,19 +735,35 @@ public class Form1 extends TransitionsForm {
         lblMota.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         lblMota.setText("Chú thích: ");
 
+        cbBuffet.setBackground(new java.awt.Color(83, 105, 118));
+        cbBuffet.setForeground(new java.awt.Color(51, 51, 51));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel2.setText("Buffet:");
+
+        txtGia.setHint("Giá ");
+
+        btnEdit.setBackground(new java.awt.Color(204, 153, 255));
+        btnEdit.setForeground(new java.awt.Color(51, 51, 51));
+        btnEdit.setText("Sửa");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(58, 58, 58)
-                        .addComponent(button9, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(button10, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(54, 54, 54))
+                    .addComponent(lblMota, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2)))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -578,13 +777,17 @@ public class Form1 extends TransitionsForm {
                                     .addComponent(SoLuong, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(jPanel3Layout.createSequentialGroup()
                                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(txtDate1, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
+                                            .addComponent(txtDate1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addComponent(txtTime, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(button4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addComponent(button1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addComponent(cbMa, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                    .addComponent(cbMa, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGroup(jPanel3Layout.createSequentialGroup()
+                                        .addComponent(cbBuffet, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtGia, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE))))
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel11)
@@ -595,12 +798,21 @@ public class Form1 extends TransitionsForm {
                                     .addComponent(BanID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(NameKH, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(SDT, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                            .addComponent(jLabel1))))
+                            .addComponent(jLabel1)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(button9, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(button10, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(11, 11, 11))
-            .addComponent(bg, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblMota, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(bg)
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -635,17 +847,24 @@ public class Form1 extends TransitionsForm {
                         .addComponent(jLabel14)
                         .addComponent(txtTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(button4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(cbBuffet, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtGia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(cbMa, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblMota, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(button9, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(button10, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(34, 34, 34)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -766,18 +985,36 @@ public class Form1 extends TransitionsForm {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                 String formattedDate = currentDate.format(formatter);
                 mdbHD.setNgayTT(formattedDate);
+                // Lấy tên buffet đang chọn từ ComboBox buffet (ví dụ cbTenBuffet)
+                String tenBuffet = cbBuffet.getSelectedItem().toString();
+                double giaBuffetDouble = serviceBuffet.getGiaBuffetByTen(tenBuffet);
+                float giaBuffet = (float) giaBuffetDouble;
+                    
+                // Nếu có mã voucher thì áp dụng giảm giá
                 if (cbMa.getSelectedItem() == null || cbMa.getSelectedItem().toString().isEmpty()) {
-                    mdbHD.setGia(slNguoi * 90);
+                    mdbHD.setGia(slNguoi * giaBuffet);
                 } else {
                     String maVoucher = cbMa.getSelectedItem().toString();
                     if (serviceVC.checkDuplicateVoucher(maVoucher)) {
                         float giamGia = serviceVC.getVoucherDiscount(maVoucher);
-                        float gia = slNguoi * 90 * (1 - giamGia);
+                        float gia = (float) (slNguoi * giaBuffet * (1 - giamGia));
                         mdbHD.setGia(gia);
                     } else {
-                        mdbHD.setGia(slNguoi * 90);
+                        mdbHD.setGia(slNguoi * giaBuffet);
                     }
                 }
+//                if (cbMa.getSelectedItem() == null || cbMa.getSelectedItem().toString().isEmpty()) {
+//                    mdbHD.setGia(slNguoi * 90);
+//                } else {
+//                    String maVoucher = cbMa.getSelectedItem().toString();
+//                    if (serviceVC.checkDuplicateVoucher(maVoucher)) {
+//                        float giamGia = serviceVC.getVoucherDiscount(maVoucher);
+//                        float gia = slNguoi * 90 * (1 - giamGia);
+//                        mdbHD.setGia(gia);
+//                    } else {
+//                        mdbHD.setGia(slNguoi * 90);
+//                    }
+//                }
                 String idkhStr = service.getIdKhByIdNd(user.getUserID());
                 int idkhBan = Integer.parseInt(idkhStr);
                 mdb.setIDKH(idkhBan);
@@ -832,16 +1069,26 @@ public class Form1 extends TransitionsForm {
             mdb.setIDBan(BanID.getText());
             mdb.setTang(idTang.getSelectedItem().toString());
             mdb.setSDT(SDT.getText());
+            mdb.setDate(txtDate1.getText());
+            String idkhStr = service.getIdKhByIdNd(user.getUserID());
+            if (idkhStr != null) {
+                int idkh = Integer.parseInt(idkhStr);
+                mdbHD.setIDKH(idkh);
+            } else {
+                JOptionPane.showMessageDialog(null, "Không tìm thấy ID khách hàng.");
+            }
             try {
                 if (service.checkDuplicateBan(mdb.getIDBan(), mdb.getTang())) {
-                    if (SDT.getText().isEmpty()) {
-                        showMessage(Message.MessageType.ERROR, "Vui lòng điền SDT đã đặt để xác nhận hủy.");
+                    if (SDT.getText().isEmpty() || txtDate1.getText().isEmpty()) {
+                        showMessage(Message.MessageType.ERROR, "Vui lòng điền SDT và ngày đã đặt để xác nhận hủy.");
                     } else {
-                        if (service.checkSDT(mdb.getIDBan(), mdb.getTang(), mdb.getSDT())) {
+                        if (service.checkSDT(mdb.getIDBan(), mdb.getTang(), mdb.getSDT())
+                                && service.checkNgayDat(mdb.getIDBan(), mdb.getTang(), mdb.getDate())) {
                             jFame = new JFrame("Exit");
                             if (JOptionPane.showConfirmDialog(jFame, "Bạn có chắc muốn hủy đặt bàn hay không?", "Hủy đặt bàn",
                                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                                service.HUYBan(mdb);
+                                service.HUYBan2(mdb);
+                                serviceHD.UpdateHDHuy(mdbHD);
                                 resetForm();
                                 showMessage(Message.MessageType.SUCCESS, "Bàn đã được hủy thành công.");
                                 JLabel[] labels = {jLabel15, jLabel17, jLabel19, jLabel21};
@@ -855,7 +1102,7 @@ public class Form1 extends TransitionsForm {
                                 }
                             }
                         } else {
-                            showMessage(Message.MessageType.ERROR, "Số điện thoại không chính xác.");
+                            showMessage(Message.MessageType.ERROR, "SDT hoặc ngày đặt không chính xác.");
                         }
                     }
                 } else {
@@ -899,6 +1146,110 @@ public class Form1 extends TransitionsForm {
         String numberPart = a.substring(index);
         BanID.setText("Ban4T" + numberPart);
     }//GEN-LAST:event_button8ActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        try {
+            // Kiểm tra xem form đã được điền đầy đủ hay chưa
+            if (!checkValidateForm2()) {
+                showMessage(Message.MessageType.ERROR, "Vui lòng điền đầy đủ thông tin.");
+            } else {
+                // Thực hiện các thiết lập thông tin đặt bàn
+
+                mdb.setIDBan(BanID.getText());
+                mdb.setTang(idTang.getSelectedItem().toString());
+                mdb.setNameKH(NameKH.getText());
+                mdb.setSDT(SDT.getText());
+                int slNguoi = Integer.parseInt(SoLuong.getText());
+                mdb.setSLNguoi(slNguoi);
+                mdb.setDate(txtDate1.getText());
+                mdb.setTime(txtTime.getText());
+                String idHD = serviceHD.getLatestMaHD(); // lay idhd lon nhat trong bang
+                if (idHD == null || idHD.isEmpty()) {
+                    idHD = "HD001"; //idhd lon nhat Neu trong bang chua co idhd nao thi 
+                } else {
+                    int k = Integer.parseInt(idHD.substring(2));//ep kieu chuoi con lay tu chuoi idHD, chuoi con bat dau tu ki tu thu 2(Dem tu 0)
+                    int tangidHD = k + 1;//tang idhd len 1
+                    idHD = "HD" + String.format("%03d", tangidHD); // tao idhd moi
+                }
+                mdbHD.setIdHD(idHD);//set gia tri cho idhd, idban, tang, ngaytt, gia 
+                mdbHD.setIdBan(BanID.getText());
+                mdbHD.setTang(idTang.getSelectedItem().toString());
+                LocalDate currentDate = LocalDate.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                String formattedDate = currentDate.format(formatter);
+                mdbHD.setNgayTT(formattedDate);
+                // Lấy tên buffet đang chọn từ ComboBox buffet (ví dụ cbTenBuffet)
+                String tenBuffet = cbBuffet.getSelectedItem().toString();
+                double giaBuffetDouble = serviceBuffet.getGiaBuffetByTen(tenBuffet);
+                float giaBuffet = (float) giaBuffetDouble;
+                    
+                // Nếu có mã voucher thì áp dụng giảm giá
+                if (cbMa.getSelectedItem() == null || cbMa.getSelectedItem().toString().isEmpty()) {
+                    mdbHD.setGia(slNguoi * giaBuffet);
+                } else {
+                    String maVoucher = cbMa.getSelectedItem().toString();
+                    if (serviceVC.checkDuplicateVoucher(maVoucher)) {
+                        float giamGia = serviceVC.getVoucherDiscount(maVoucher);
+                        float gia = (float) (slNguoi * giaBuffet * (1 - giamGia));
+                        mdbHD.setGia(gia);
+                    } else {
+                        mdbHD.setGia(slNguoi * giaBuffet);
+                    }
+                }
+//                if (cbMa.getSelectedItem() == null || cbMa.getSelectedItem().toString().isEmpty()) {
+//                    mdbHD.setGia(slNguoi * 90);
+//                } else {
+//                    String maVoucher = cbMa.getSelectedItem().toString();
+//                    if (serviceVC.checkDuplicateVoucher(maVoucher)) {
+//                        float giamGia = serviceVC.getVoucherDiscount(maVoucher);
+//                        float gia = slNguoi * 90 * (1 - giamGia);
+//                        mdbHD.setGia(gia);
+//                    } else {
+//                        mdbHD.setGia(slNguoi * 90);
+//                    }
+//                }
+                String idkhStr = service.getIdKhByIdNd(user.getUserID());
+                int idkhBan = Integer.parseInt(idkhStr);
+                mdb.setIDKH(idkhBan);
+                if (idkhStr != null) {
+                    int idkh = Integer.parseInt(idkhStr);
+                    mdbHD.setIDKH(idkh);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Không tìm thấy ID khách hàng.");
+                }
+                Object selectedItem = cbMa.getSelectedItem();
+                if (selectedItem == null || selectedItem.equals("")) {
+                    mdbVC.setMaVoucher("");
+                } else {
+                    mdbVC.setMaVoucher(selectedItem.toString());
+                }
+
+                // Kiểm tra sự trùng lặp và thực hiện đặt bàn
+                try {
+                    service.UpdateBan(mdb);
+                    service.insertBan(mdb);
+                    serviceVC.deleteVC(mdbVC, idkhBan);
+                    serviceHD.UpdateHDSuaDatBan(mdbHD);
+                    showMessage(Message.MessageType.SUCCESS, "Sửa bàn thành công.");
+//                    JLabel[] labels = {jLabel15, jLabel17, jLabel19, jLabel21};
+//                    for (JLabel label : labels) {
+//                        String currentText = label.getText();
+//                        if (currentText.contains("(Còn Trống)")) {
+//                            if (label.getText().contains(mdb.getIDBan())) {
+//                                label.setText(label.getText().replace("(Còn Trống)", "(Đã Đặt)")); // Chỉ thay đổi văn bản của bàn đã đặt
+//                            }
+//                        }
+//                    }
+                } catch (Exception e) {
+                    showMessage(Message.MessageType.ERROR, "Lỗi khi sửa bàn.");
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            showMessage(Message.MessageType.ERROR, "Đã xảy ra lỗi không xác định.");
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
 
     //hien thong bao
     private void showMessage(Message.MessageType messageType, String message) {
@@ -962,6 +1313,7 @@ public class Form1 extends TransitionsForm {
     private qlnh.swing.MyTextField SoLuong;
     private com.raven.swing.Background background1;
     private javax.swing.JLayeredPane bg;
+    private qlnh.swing.Button btnEdit;
     private qlnh.swing.Button button1;
     private qlnh.swing.Button button10;
     private qlnh.swing.Button button4;
@@ -970,6 +1322,7 @@ public class Form1 extends TransitionsForm {
     private qlnh.swing.Button button7;
     private qlnh.swing.Button button8;
     private qlnh.swing.Button button9;
+    private javax.swing.JComboBox<String> cbBuffet;
     private javax.swing.JComboBox<String> cbMa;
     private com.raven.datechooser.DateChooser dateChooser1;
     private javax.swing.JComboBox<String> idTang;
@@ -982,6 +1335,7 @@ public class Form1 extends TransitionsForm {
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
@@ -996,6 +1350,7 @@ public class Form1 extends TransitionsForm {
     private javax.swing.JLabel lblMota;
     private com.raven.swing.TimePicker timePicker1;
     private qlnh.swing.MyTextField txtDate1;
+    private qlnh.swing.MyTextField txtGia;
     private qlnh.swing.MyTextField txtTime;
     // End of variables declaration//GEN-END:variables
 

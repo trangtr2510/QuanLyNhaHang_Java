@@ -87,16 +87,34 @@ public class ServiceNguyenLieu {
     }
 
     public void deleteNguyenLieu(String maNL) throws SQLException {
-        ensureConnectionIsOpen();  // Ensure the connection is open
+        ensureConnectionIsOpen();
 
         String sql = "DELETE FROM nguyenlieu WHERE MaNL = ?";
         try (PreparedStatement pDelete = con.prepareStatement(sql)) {
             pDelete.setString(1, maNL);
-            pDelete.executeUpdate(); // Execute delete query
+            pDelete.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw e;  // Re-throw the exception after logging it
+            throw e;
         }
+    }
+
+    public boolean isMaNLInChiTietPhieuNhap(String maNL) throws SQLException {
+        ensureConnectionIsOpen(); 
+
+        String sql = "SELECT COUNT(*) FROM chitietphieunhap WHERE MaNL = ?";
+        try (PreparedStatement pCheck = con.prepareStatement(sql)) {
+            pCheck.setString(1, maNL);
+            try (ResultSet rs = pCheck.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0; 
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return false;
     }
 
     public String getLatestNguyenLieu() throws SQLException {
@@ -466,6 +484,7 @@ public class ServiceNguyenLieu {
     }
 
     public List<String> getActiveSuppliers() throws SQLException {
+        ensureConnectionIsOpen();
         List<String> supplierNames = new ArrayList<>();
         String sql = "SELECT NhaCungCap FROM NhaCungCap WHERE TrangThai = 'Hoat dong'";
         PreparedStatement pstmt = con.prepareStatement(sql);

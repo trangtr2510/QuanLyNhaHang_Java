@@ -31,7 +31,7 @@ public class ServiceMenu {
         PreparedStatement p = con.prepareStatement(sql);
         p.setString(1, menu.getNameTD());
         p.setString(2, menu.getLoaiTD());
-        p.setString(4, menu.getIdTD());
+        p.setString(3, menu.getIdTD());
 
         p.executeUpdate();
         p.close();

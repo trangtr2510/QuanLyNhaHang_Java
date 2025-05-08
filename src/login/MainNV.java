@@ -46,7 +46,7 @@ public class MainNV extends javax.swing.JFrame {
                 } else if (index == 3) {
                     showForm(new formCNHoaDon());
                 }  else{
-                    showForm(new Form(index));
+                    showForm(new formBan());
                 }
             }
         };

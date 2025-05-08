@@ -53,6 +53,21 @@ public class ServiceNCC {
         pDelete.close();
     }
 
+    public boolean checkDuplicateNCCByName(String tenNCC) throws SQLException {
+        boolean duplicate = false;
+        String sql = "SELECT 1 FROM NguyenLieu WHERE NhaCungCap = ?";
+
+        try (PreparedStatement pCheck = con.prepareStatement(sql)) {
+            pCheck.setString(1, tenNCC); 
+            try (ResultSet r = pCheck.executeQuery()) {
+                if (r.next()) {
+                    duplicate = true; // Có dữ liệu trả về => Tên đã tồn tại
+                }
+            }
+        }
+        return duplicate; 
+    }
+
     // Check if a supplier already exists by MaNCC
     public boolean checkDuplicateNCC(int maNCC) throws SQLException {
         boolean duplicate = false;

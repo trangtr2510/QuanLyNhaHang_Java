@@ -127,7 +127,7 @@ public class MainLogin extends javax.swing.JFrame {
                 }
             }
         });
-         verifyCode.addEventButtonOK(new ActionListener(){
+        verifyCode.addEventButtonOK(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent ae) {
                 

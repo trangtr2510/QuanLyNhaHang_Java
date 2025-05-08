@@ -20,7 +20,7 @@ public class Form4 extends TransitionsForm {
     }
 
     private void loadData() {
-        final String header[] = {"Mã hóa đơn", "Bàn", "Tầng", "Ngày thanh toán", "Giá"};
+        final String header[] = {"Mã hóa đơn", "Bàn", "Tầng", "Ngày thanh toán", "Giá", "Trạng thái"};
         DefaultTableModel model = new DefaultTableModel(header, 0);
 
         try {
@@ -44,8 +44,9 @@ public class Form4 extends TransitionsForm {
                 String ten = rsDatBan.getString("tang");
                 String Sdt = rsDatBan.getString("ngaytt");
                 int soLuongNguoi = rsDatBan.getInt("gia");
+                String trangthai = rsDatBan.getString("trangthai");
 
-                model.addRow(new Object[]{maBan, tang, ten, Sdt, soLuongNguoi});
+                model.addRow(new Object[]{maBan, tang, ten, Sdt, soLuongNguoi, trangthai});
             }
 
             tbLS.setModel(model); // Đặt mô hình cho bảng

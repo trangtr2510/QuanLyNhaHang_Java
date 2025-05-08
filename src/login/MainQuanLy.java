@@ -7,6 +7,7 @@ import com.raven.form.Form1;
 import com.raven.form.Form_1;
 import com.raven.form.MenuFood;
 import com.raven.formQL.formBan;
+import com.raven.formQL.formBuffet;
 import com.raven.formQL.formDSDB;
 import com.raven.formQL.formHD;
 import com.raven.formQL.formKH;
@@ -52,15 +53,17 @@ public class MainQuanLy extends javax.swing.JFrame {
                 } else if (index == 6) {
                     showForm(new formUser());
                 } else if (index == 7) {
-                    showForm(new formDSDB());
+                    showForm(new formBuffet());
                 } else if (index == 8) {
-                    showForm(new formVoucher());
+                    showForm(new formDSDB());
                 } else if (index == 9) {
+                    showForm(new formVoucher());
+                } else if (index == 10) {
                     MainLogin login = new MainLogin();
                     login.setVisible(true);
                     MainQuanLy.this.dispose();
                 } else {
-                    showForm(new Form(index));
+                    showForm(new Form_1());
                 }
             }
         };

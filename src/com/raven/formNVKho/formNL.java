@@ -7,6 +7,8 @@ import com.raven.model.ModelNhanVien;
 import com.raven.service.ServiceNV;
 import com.raven.service.ServiceNguyenLieu;
 import com.raven.swing.ScrollBar;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Connection;
@@ -16,6 +18,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -82,7 +85,6 @@ public class formNL extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "Lỗi khi tải danh sách nhà cung cấp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     //hien thong bao
     private void showMessage(Message.MessageType messageType, String message) {
         Message ms = new Message();
@@ -563,12 +565,12 @@ public class formNL extends javax.swing.JPanel {
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         try {
-            if (txtID.getText().isEmpty()) {//kiểm tra ô nhập mã nhân viên, nếu trống thì thông báo lỗi
+            if (txtID.getText().isEmpty()) {
                 showMessage(Message.MessageType.ERROR, "Vui lòng điền mã nguyên liệu cần xóa.");
+            } else if (service.isMaNLInChiTietPhieuNhap(txtID.getText())) {
+                JOptionPane.showMessageDialog(this, "Nguyên liệu đang tồn tại trong bảng chi tiết phiếu. Không thể xóa.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                return;
             } else {
-//                int id = Integer.parseInt(txtID.getText());
-//                mdb.setMaNL(id);//set dữ liệu cần cho phương thức 
-                //tạo form thông báo xác nhận xóa nhân viên
                 int ck = JOptionPane.showConfirmDialog(this, "Bạn chắc chắn muốn xóa nguyên liệu này?", "Thông báo", JOptionPane.YES_NO_OPTION);
                 if (ck == JOptionPane.YES_OPTION) {//nếu chọn có thì thực hiện xóa nhân viên
                     service.deleteNguyenLieu(txtID.getText());

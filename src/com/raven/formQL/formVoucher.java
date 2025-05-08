@@ -577,9 +577,7 @@ public class formVoucher extends javax.swing.JPanel {
                     mdb.setTenVoucher(txtName.getText());
                     mdb.setMoTa(txtMota.getText());
                     LocalDate currentDate = LocalDate.now();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-                    // Parse text input to LocalDate
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                     LocalDate ngayBatDauLocal = LocalDate.parse(txtNBD.getText(), formatter);
                     LocalDate ngayKetThucLocal = LocalDate.parse(txtNKT.getText(), formatter);
 
@@ -639,7 +637,7 @@ public class formVoucher extends javax.swing.JPanel {
                     mdb.setTenVoucher(txtName.getText());
                     mdb.setMoTa(txtMota.getText());
                     LocalDate currentDate = LocalDate.now();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
                     // Parse text input to LocalDate
                     LocalDate ngayBatDauLocal = LocalDate.parse(txtNBD.getText(), formatter);

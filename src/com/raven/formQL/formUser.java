@@ -435,7 +435,7 @@ public class formUser extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn người dùng để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
                 return;
             } else {
-                int ck = JOptionPane.showConfirmDialog(this, "Bạn chắc chắn muốn xóa người dùng này?", "Thông báo", JOptionPane.YES_NO_OPTION);
+                int ck = JOptionPane.showConfirmDialog(this, "Bạn chắc chắn muốn xóa người dùng này? Có thể người dùng này là 1 khách hàng hoặc nhân viên của quán?", "Thông báo", JOptionPane.YES_NO_OPTION);
                 if (ck == JOptionPane.YES_OPTION) {
                     String maPNString = (String) dgwND.getValueAt(selectedRow, 0);
                     int maPN = Integer.parseInt(maPNString);

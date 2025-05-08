@@ -62,10 +62,11 @@ public class MenuQL extends javax.swing.JPanel {
         addMenu(new ImageIcon(getClass().getResource("/Icons/customer.png")), "Quản lý khách hàng", 4);
         addMenu(new ImageIcon(getClass().getResource("/Icons/inventory (1).png")), "Quản lý hóa đơn", 5);
         addMenu(new ImageIcon(getClass().getResource("/Icons/user (2).png")), "Quản lý người dùng", 6);
-        addMenu(new ImageIcon(getClass().getResource("/Icons/8.png")), "Danh sách đặt bàn", 7);
-        addMenu(new ImageIcon(getClass().getResource("/Icons/8.png")), "Quản lý Voucher", 8);
+        addMenu(new ImageIcon(getClass().getResource("/Icons/food.png")), "Quản lý Buffet", 7);
+        addMenu(new ImageIcon(getClass().getResource("/Icons/8.png")), "Danh sách đặt bàn", 8);
+        addMenu(new ImageIcon(getClass().getResource("/Icons/8.png")), "Quản lý Voucher", 9);
         addEmpty();
-        addMenu(new ImageIcon(getClass().getResource("/Icons/10.png")), "Logout", 9);
+        addMenu(new ImageIcon(getClass().getResource("/Icons/10.png")), "Logout", 10);
     }
 
     private void addEmpty() {

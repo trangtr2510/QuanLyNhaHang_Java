@@ -150,6 +150,12 @@ public class ServiceUser {
     public void deleteUser(int userID) throws SQLException {
         con.setAutoCommit(false);
         try {
+            String deleteKHSQL = "DELETE FROM QLKhachHang WHERE ID_ND = ?";
+            PreparedStatement deleteKHStmt = con.prepareStatement(deleteKHSQL);
+            deleteKHStmt.setInt(1, userID);
+            deleteKHStmt.executeUpdate();
+            deleteKHStmt.close();
+            
             String deleteEmployeeSQL = "DELETE FROM QLNhanVien2 WHERE ID_ND = ?";
             PreparedStatement deleteEmployeeStmt = con.prepareStatement(deleteEmployeeSQL);
             deleteEmployeeStmt.setInt(1, userID);
@@ -227,7 +233,6 @@ public class ServiceUser {
         - Ngày tham gia: ngày hiện tại đăng ký
         - Doanh số, điểm tích lũy mặc định là 0
         - ID_ND lấy từ Người dùng vừa tạo
-        
      */
     public void doneVerify(int userID, String name) throws SQLException {
         //Cập nhật NguoiDung
@@ -253,6 +258,7 @@ public class ServiceUser {
         p2.setString(2, name);
         p2.setString(3, simpleDateFormat.format(new Date()));
         p2.setInt(4, userID);
+        p2.setString(5, simpleDateFormat.format(new Date()));
         p2.execute();
 
         p1.close();
